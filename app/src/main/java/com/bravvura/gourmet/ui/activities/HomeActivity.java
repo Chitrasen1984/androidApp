@@ -1,8 +1,12 @@
 package com.bravvura.gourmet.ui.activities;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.content.res.ResourcesCompat;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -18,6 +22,7 @@ import com.bravvura.gourmet.R;
 import com.bravvura.gourmet.models.CategoryBean;
 import com.bravvura.gourmet.ui.adapters.CategoryExpandableListAdapter;
 import com.bravvura.gourmet.ui.fragments.BaseBottomTabFragment;
+import com.bravvura.gourmet.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +30,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class HomeActivity extends BaseActivity
-        /*implements NavigationView.OnNavigationItemSelectedListener*/ {
+public class HomeActivity extends BaseActivity {
 
     @Bind(R.id.drawer_layout)
     DrawerLayout drawerLayout;
@@ -46,7 +50,7 @@ public class HomeActivity extends BaseActivity
         setContentView(R.layout.activity_home);
         ButterKnife.bind(this);
 
-        setSupportActionBar(toolbar);
+        initToolbar();
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -54,19 +58,58 @@ public class HomeActivity extends BaseActivity
         drawerLayout.addDrawerListener(toggle);
         drawerLayout.setStatusBarBackgroundColor(getResources().getColor(android.R.color.transparent));
         toggle.syncState();
+        toggle.setDrawerIndicatorEnabled(false);
+        Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.mipmap.hamburger, getTheme());
+        toggle.setHomeAsUpIndicator(drawable);
 
         /*NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);*/
 
-        CategoryExpandableListAdapter categoryExpandableListAdapter = new CategoryExpandableListAdapter(this, prepareListData());
-        expandableListView.setAdapter(categoryExpandableListAdapter);
+        initDrawerView();
 
-        init();
+        toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (drawerLayout.isDrawerVisible(GravityCompat.START)) {
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                } else {
+                    drawerLayout.openDrawer(GravityCompat.START);
+                }
+            }
+        });
+
+        init(Constants.TAG_HOME_SCREEN);
     }
 
-    private void init() {
+    private void initDrawerView() {
 
-        getSupportFragmentManager().beginTransaction().add(R.id.app_bar_home_fl_container, new BaseBottomTabFragment()).commit();
+        // Third (and last) level items in the ExpandableListView
+        ExpandableListView.OnChildClickListener onChildClickListener = new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView eListView, View view, int groupPosition,
+                                        int childPosition, long id) {
+                init(Constants.TAG_CATEGORY_SCREEN);
+                drawerLayout.closeDrawer(GravityCompat.START);
+                return true /* or true depending on what you need */;
+            }
+        };
+        CategoryExpandableListAdapter categoryExpandableListAdapter = new CategoryExpandableListAdapter(this, prepareListData(), onChildClickListener);
+        expandableListView.setAdapter(categoryExpandableListAdapter);
+    }
+
+    private void initToolbar() {
+        toolbar.setLogo(R.mipmap.gourmet_logo);
+        //toolbar.addView(LayoutInflater.from(this).inflate(R.layout.home_screen_toolbar_view, null));
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+    }
+
+    private void init(int screenTag) {
+        Fragment baseTabfragment = new BaseBottomTabFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt(Constants.EXTRA_LOAD_SCREEN, screenTag);
+        baseTabfragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().add(R.id.app_bar_home_fl_container, baseTabfragment).commit();
     }
 
     @Override
@@ -77,28 +120,6 @@ public class HomeActivity extends BaseActivity
         } else {
             super.onBackPressed();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.home, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
    /* @SuppressWarnings("StatementWithEmptyBody")

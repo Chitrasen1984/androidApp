@@ -12,7 +12,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.bravvura.gourmet.R;
+import com.bravvura.gourmet.listeners.OnCategoryClickListener;
 import com.bravvura.gourmet.models.BottomTabBean;
+import com.bravvura.gourmet.utils.Constants;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -25,8 +27,6 @@ public class BaseBottomTabFragment extends Fragment {
 
     //@Bind(R.id.fragment_base_bottom_tab_tab_layout)
     TabLayout tabLayout;
-
-    Fragment fragmentHome;
 
     @Nullable
     @Override
@@ -42,10 +42,27 @@ public class BaseBottomTabFragment extends Fragment {
         tabLayout = (TabLayout) view.findViewById(R.id.fragment_base_bottom_tab_tab_layout);
         setupTabLayout();
         setCustomViewOnTabLayout();
+
+        initiateScreen();
+    }
+
+    private void initiateScreen() {
+
+        if (getArguments() != null) {
+            Bundle bundle = getArguments();
+            int screenTag = bundle.getInt(Constants.EXTRA_LOAD_SCREEN);
+            if (screenTag == Constants.TAG_HOME_SCREEN) {
+                Fragment fragmentHome = new HomeFragment();
+                replaceFragment(fragmentHome);
+            } else if (screenTag == Constants.TAG_CATEGORY_SCREEN) {
+                Fragment fragmentCategory = new CategoryFragment();
+                replaceFragment(fragmentCategory);
+            }
+        }
     }
 
     private void setupTabLayout() {
-        fragmentHome = new HomeFragment();
+
         tabLayout.addTab(tabLayout.newTab(), true);
         tabLayout.addTab(tabLayout.newTab());
         tabLayout.addTab(tabLayout.newTab());
@@ -62,7 +79,6 @@ public class BaseBottomTabFragment extends Fragment {
             tvTab.setCompoundDrawablesWithIntrinsicBounds(0, tabArray[i].tabImageId, 0, 0);
             tabLayout.getTabAt(i).setCustomView(tabView);
         }
-        replaceFragment(fragmentHome);
 
     }
 
@@ -124,6 +140,15 @@ public class BaseBottomTabFragment extends Fragment {
         FragmentManager childFragmentManager = getChildFragmentManager();
         FragmentTransaction fragmentTransaction = childFragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragment_base_bottom_tab_fl_container, fragment);
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        fragmentTransaction.commit();
+    }
+
+    public void onClickCategory() {
+        Fragment categoryFragment = new CategoryFragment();
+        FragmentManager childFragmentManager = getChildFragmentManager();
+        FragmentTransaction fragmentTransaction = childFragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.fragment_base_bottom_tab_fl_container, categoryFragment);
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         fragmentTransaction.commit();
     }

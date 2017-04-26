@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bravvura.gourmet.R;
@@ -13,8 +14,6 @@ import com.bravvura.gourmet.models.CategoryBean;
 import com.bravvura.gourmet.ui.widgets.CustomExpandableListView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by munchado on 21/4/17.
@@ -26,6 +25,7 @@ public class CategoryExpandableListAdapter extends BaseExpandableListAdapter {
     private ArrayList<CategoryBean> categoryBeanList;
     private final LayoutInflater inflater;
     public Entry[] lsfirst;
+    private ExpandableListView.OnChildClickListener onChildClickListener;
 
     public class Entry {
         public final CustomExpandableListView cls;
@@ -37,10 +37,11 @@ public class CategoryExpandableListAdapter extends BaseExpandableListAdapter {
         }
     }
 
-    public CategoryExpandableListAdapter(Context context, ArrayList<CategoryBean> categoryBean) {
+    public CategoryExpandableListAdapter(Context context, ArrayList<CategoryBean> categoryBean, ExpandableListView.OnChildClickListener onChildClickListener) {
         mContext = context;
         categoryBeanList = categoryBean;
         this.inflater = LayoutInflater.from(context);
+        this.onChildClickListener = onChildClickListener;
 
         lsfirst = new Entry[categoryBeanList.size()];
 
@@ -49,8 +50,9 @@ public class CategoryExpandableListAdapter extends BaseExpandableListAdapter {
             CategorySecondLevelAdapter adp = new CategorySecondLevelAdapter(context, categoryBeanList.get(i));
             celv.setAdapter(adp);
             celv.setGroupIndicator(null);
-            /*celv.setOnChildClickListener(childLst);
-            celv.setOnGroupClickListener(grpLst);
+            celv.setDivider(null);
+            celv.setOnChildClickListener(onChildClickListener);
+            /*celv.setOnGroupClickListener(grpLst);
             celv.setOnGroupExpandListener(grpExpLst);*/
 
             lsfirst[i] = new Entry(celv, adp);
@@ -102,15 +104,20 @@ public class CategoryExpandableListAdapter extends BaseExpandableListAdapter {
         final CategoryBean item = (CategoryBean) getGroup(groupPosition);
 
         if (layout == null) {
-            layout = inflater.inflate(R.layout.category_row, parent, false);
+            layout = inflater.inflate(R.layout.group_category_row, parent, false);
             holder = new GroupViewHolder();
-            holder.title = (TextView) layout.findViewById(R.id.category_row_tv);
+            holder.tvTitle = (TextView) layout.findViewById(R.id.category_row_tv_title);
             layout.setTag(holder);
         } else {
             holder = (GroupViewHolder) layout.getTag();
         }
 
-        holder.title.setText(item.title.trim());
+        holder.tvTitle.setText(item.title.trim());
+
+        if (isExpanded)
+            holder.tvTitle.setTextColor(mContext.getResources().getColor(android.R.color.holo_green_dark));
+        else
+            holder.tvTitle.setTextColor(mContext.getResources().getColor(R.color.black));
 
         return layout;
     }
@@ -127,6 +134,12 @@ public class CategoryExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     private static class GroupViewHolder {
-        TextView title;
+        TextView tvTitle;
+        ImageView ivIcon;
+        ImageView ivExpand;
+    }
+
+    public void doChangesAccordingly() {
+
     }
 }
