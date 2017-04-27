@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import com.bravvura.gourmet.models.ProductBean;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by munchado on 26/4/17.
@@ -12,5 +13,5 @@ import java.util.ArrayList;
 
 public interface OnProductUpdateListener {
 
-    public void updateProducts(RecyclerView recyclerView, ArrayList<ProductBean> productBeans);
+    public void updateProducts();
 }

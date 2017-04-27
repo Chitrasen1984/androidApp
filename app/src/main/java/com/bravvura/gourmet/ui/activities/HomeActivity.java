@@ -2,8 +2,6 @@ package com.bravvura.gourmet.ui.activities;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
 import android.view.LayoutInflater;
@@ -12,13 +10,12 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.ExpandableListView;
+import android.widget.LinearLayout;
 
 import com.bravvura.gourmet.R;
+import com.bravvura.gourmet.listeners.OnToolbarViewChangeListener;
 import com.bravvura.gourmet.models.CategoryBean;
 import com.bravvura.gourmet.ui.adapters.CategoryExpandableListAdapter;
 import com.bravvura.gourmet.ui.fragments.BaseBottomTabFragment;
@@ -30,7 +27,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class HomeActivity extends BaseActivity {
+public class HomeActivity extends BaseActivity implements OnToolbarViewChangeListener {
 
     @Bind(R.id.drawer_layout)
     DrawerLayout drawerLayout;
@@ -44,6 +41,8 @@ public class HomeActivity extends BaseActivity {
     @Bind(R.id.navigation_view_expandable_list_view)
     ExpandableListView expandableListView;
 
+    private ActionBarDrawerToggle toggle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +51,7 @@ public class HomeActivity extends BaseActivity {
 
         initToolbar();
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        toggle = new ActionBarDrawerToggle(
                 this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         //navigationView.setItemIconTintList(null);
         drawerLayout.addDrawerListener(toggle);
@@ -99,7 +98,7 @@ public class HomeActivity extends BaseActivity {
 
     private void initToolbar() {
         toolbar.setLogo(R.mipmap.gourmet_logo);
-        //toolbar.addView(LayoutInflater.from(this).inflate(R.layout.home_screen_toolbar_view, null));
+        //toolbar.addView(LayoutInflater.from(this).inflate(R.layout.toolbar_view_home_screen, null));
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
@@ -114,11 +113,20 @@ public class HomeActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+        //DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
+            /*Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.app_bar_home_fl_container);
+            if (fragment instanceof BaseBottomTabFragment) {
+                if (((BaseBottomTabFragment) fragment).isHomeOnTop()) {
+                    super.onBackPressed();
+                    return;
+                } else {
+                    ((BaseBottomTabFragment) fragment).onBack();
+                }
+            }*/
         }
     }
 
@@ -188,5 +196,32 @@ public class HomeActivity extends BaseActivity {
             categoryBeanArrayList.add(categoryBean);
         }
         return categoryBeanArrayList;
+    }
+
+    @Override
+    public void onChangeToolbarView(int screenTag) {
+
+
+        if (screenTag == Constants.TAG_CATEGORY_SCREEN) {
+            toggle.setDrawerIndicatorEnabled(false);
+            toolbar.removeAllViews();
+            toolbar.setNavigationIcon(null);
+            toolbar.setContentInsetsAbsolute(0, 0);
+
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
+            View toolbarView = LayoutInflater.from(this).inflate(R.layout.toolbar_view_category_screen, null);
+            LinearLayout llOuter = (LinearLayout) toolbarView.findViewById(R.id.toolbar_view_category_screen_ll);
+            llOuter.setLayoutParams(new LinearLayout.LayoutParams(toolbar.getWidth(), toolbar.getHeight()));
+
+            toolbar.addView(toolbarView);
+        } else if (screenTag == Constants.TAG_HOME_SCREEN) {
+            toolbar.removeAllViews();
+            toggle.setDrawerIndicatorEnabled(true);
+            Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.mipmap.hamburger, getTheme());
+            toolbar.setNavigationIcon(drawable);
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
+            toolbar.setLogo(R.mipmap.gourmet_logo);
+        }
     }
 }

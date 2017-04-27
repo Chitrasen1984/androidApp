@@ -14,6 +14,7 @@ import android.widget.ProgressBar;
 
 import com.bravvura.gourmet.R;
 import com.bravvura.gourmet.listeners.OnProductUpdateListener;
+import com.bravvura.gourmet.listeners.OnToolbarViewChangeListener;
 import com.bravvura.gourmet.models.CategoryBean;
 import com.bravvura.gourmet.models.ProductBean;
 import com.bravvura.gourmet.models.ProductCategory;
@@ -21,12 +22,14 @@ import com.bravvura.gourmet.ui.adapters.CategoryListAdapter;
 import com.bravvura.gourmet.ui.adapters.HomeBannerAdapter;
 import com.bravvura.gourmet.ui.adapters.ProductListAdapter;
 import com.bravvura.gourmet.ui.adapters.ProductViewAdapter;
+import com.bravvura.gourmet.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
 
 /**
  * Created by munchado on 26/4/17.
@@ -35,7 +38,7 @@ import butterknife.ButterKnife;
 public class CategoryFragment extends Fragment implements OnProductUpdateListener {
 
     @Bind(R.id.fragment_category_rv_categories)
-    RecyclerView recyclerView;
+    RecyclerView recyclerViewCategory;
 
     @Bind(R.id.fragment_category_rv_product)
     RecyclerView recyclerViewProduct;
@@ -43,9 +46,16 @@ public class CategoryFragment extends Fragment implements OnProductUpdateListene
     @Bind(R.id.fragment_category_progress_bar)
     ProgressBar progressBar;
 
+    private SectionedRecyclerViewAdapter sectionAdapter;
+
+    private int selectedCategoryPosition=0;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if (getActivity() != null && getActivity() instanceof OnToolbarViewChangeListener) {
+            ((OnToolbarViewChangeListener) getActivity()).onChangeToolbarView(Constants.TAG_CATEGORY_SCREEN);
+        }
         View view = inflater.inflate(R.layout.fragment_category, container, false);
         ButterKnife.bind(this, view);
         return view;
@@ -57,8 +67,9 @@ public class CategoryFragment extends Fragment implements OnProductUpdateListene
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(new CategoryListAdapter(getActivity(), prepareListData()));
+        recyclerViewCategory.setLayoutManager(linearLayoutManager);
+        recyclerViewCategory.setAdapter(new CategoryListAdapter(getActivity(), prepareListData(), CategoryFragment.this, selectedCategoryPosition));
+
         initProductContainer();
     }
 
@@ -70,12 +81,84 @@ public class CategoryFragment extends Fragment implements OnProductUpdateListene
             public void run() {
                 progressBar.setVisibility(View.GONE);
                 recyclerViewProduct.setVisibility(View.VISIBLE);
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+
+                sectionAdapter = new SectionedRecyclerViewAdapter();
+                getProductList();
+
+                GridLayoutManager glm = new GridLayoutManager(getContext(), 2);
+                glm.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+                    @Override
+                    public int getSpanSize(int position) {
+                        switch (sectionAdapter.getSectionItemViewType(position)) {
+                            case SectionedRecyclerViewAdapter.VIEW_TYPE_HEADER:
+                                return 2;
+                            default:
+                                return 1;
+                        }
+                    }
+                });
+                recyclerViewProduct.setLayoutManager(glm);
+                recyclerViewProduct.setAdapter(sectionAdapter);
+
+                /*LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                 linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                 recyclerViewProduct.setLayoutManager(linearLayoutManager);
-                recyclerViewProduct.setAdapter(new ProductListAdapter(getActivity(), prepareProductData(), CategoryFragment.this));
+                getProductList();
+                recyclerViewProduct.setAdapter(new ProductListAdapter(getActivity(), prepareProductData(), CategoryFragment.this));*/
+
             }
         }, 1000);
+    }
+
+    private void getProductList() {
+        for (int i = 0; i < 10; i++) {
+
+            List<ProductBean> productBeanList = new ArrayList<>();
+            for (int j = 0; j < 4; j++) {
+                ProductBean productBean = new ProductBean();
+                if (j == 0) {
+                    productBean.productTitle = "South African Angus Veal Rump Cap Roast";
+                    productBean.productPrice = 184.00;
+                    productBean.quantity = "800g";
+                } else if (j == 1) {
+                    productBean.productTitle = "Danish Beef Egyptian Sausage";
+                    productBean.productPrice = 39.60;
+                    productBean.quantity = "400g";
+                } else if (j == 2) {
+                    productBean.productTitle = "Fresh Chicken Tandoori Shish Tawook";
+                    productBean.productPrice = 63.75;
+                    productBean.quantity = "600g";
+                } else if (j == 3) {
+                    productBean.productTitle = "Danish Beef Topside Steak(s)";
+                    productBean.productPrice = 67.50;
+                    productBean.quantity = "700g";
+                }
+                productBean.currency = "EPG";
+                productBeanList.add(productBean);
+            }
+            ProductCategory productCategory = null;
+            if (i == 0)
+                productCategory = new ProductCategory("Most Popular", productBeanList, getActivity());
+            else if (i == 1)
+                productCategory = new ProductCategory("All Time Favorites", productBeanList, getActivity());
+            else if (i == 2)
+                productCategory = new ProductCategory("Weekly Supplies", productBeanList, getActivity());
+            else if (i == 3)
+                productCategory = new ProductCategory("Most popular-1", productBeanList, getActivity());
+            else if (i == 4)
+                productCategory = new ProductCategory("All Time Favorites-1", productBeanList, getActivity());
+            else if (i == 5)
+                productCategory = new ProductCategory("Weekly Supplies-1", productBeanList, getActivity());
+            else if (i == 6)
+                productCategory = new ProductCategory("Most Popular-2", productBeanList, getActivity());
+            else if (i == 7)
+                productCategory = new ProductCategory("All Time Favorites-2", productBeanList, getActivity());
+            else if (i == 8)
+                productCategory = new ProductCategory("Weekly Supplies-2", productBeanList, getActivity());
+            else if (i == 9)
+                productCategory = new ProductCategory("Weekly Supplies-3", productBeanList, getActivity());
+            sectionAdapter.addSection(productCategory);
+        }
     }
 
     private ArrayList<CategoryBean> prepareListData() {
@@ -102,7 +185,7 @@ public class CategoryFragment extends Fragment implements OnProductUpdateListene
         return categoryBeanArrayList;
     }
 
-    private ArrayList<ProductCategory> prepareProductData() {
+    /*private ArrayList<ProductCategory> prepareProductData() {
         ArrayList<ProductCategory> productCategories = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             ProductCategory productCategory = new ProductCategory();
@@ -124,7 +207,7 @@ public class CategoryFragment extends Fragment implements OnProductUpdateListene
                 productCategory.header = "All Time Favorites-2";
             else if (i == 8)
                 productCategory.header = "Weekly Supplies-2";
-            else if (i == 5)
+            else if (i == 9)
                 productCategory.header = "Weekly Supplies-3";
 
             for (int j = 0; j < 5; j++) {
@@ -153,12 +236,14 @@ public class CategoryFragment extends Fragment implements OnProductUpdateListene
             productCategories.add(productCategory);
         }
         return productCategories;
-    }
+    }*/
 
     @Override
-    public void updateProducts(RecyclerView rViewProduct, ArrayList<ProductBean> productBeans) {
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
+    public void updateProducts() {
+       /* GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
         rViewProduct.setLayoutManager(gridLayoutManager);
-        rViewProduct.setAdapter(new ProductViewAdapter(getActivity(), productBeans));
+        rViewProduct.setAdapter(new ProductViewAdapter(getActivity(), productBeans));*/
+
+        initProductContainer();
     }
 }

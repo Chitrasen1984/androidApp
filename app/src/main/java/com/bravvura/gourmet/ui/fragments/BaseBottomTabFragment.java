@@ -61,6 +61,18 @@ public class BaseBottomTabFragment extends Fragment {
         }
     }
 
+    public boolean isHomeOnTop() {
+        Fragment fragment = getChildFragmentManager().findFragmentById(R.id.fragment_base_bottom_tab_fl_container);
+        if (fragment == null || fragment instanceof HomeFragment) {
+            return true;
+        }
+        return false;
+    }
+
+    public void onBack() {
+        getChildFragmentManager().popBackStack();
+    }
+
     private void setupTabLayout() {
 
         tabLayout.addTab(tabLayout.newTab(), true);
@@ -141,15 +153,15 @@ public class BaseBottomTabFragment extends Fragment {
         FragmentTransaction fragmentTransaction = childFragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragment_base_bottom_tab_fl_container, fragment);
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        fragmentTransaction.commit();
+        fragmentTransaction.addToBackStack(null).commit();
     }
 
-    public void onClickCategory() {
+    /*public void onClickCategory() {
         Fragment categoryFragment = new CategoryFragment();
         FragmentManager childFragmentManager = getChildFragmentManager();
         FragmentTransaction fragmentTransaction = childFragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.fragment_base_bottom_tab_fl_container, categoryFragment);
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         fragmentTransaction.commit();
-    }
+    }*/
 }

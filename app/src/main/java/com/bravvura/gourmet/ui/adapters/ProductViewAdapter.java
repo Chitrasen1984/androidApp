@@ -1,21 +1,21 @@
 package com.bravvura.gourmet.ui.adapters;
 
 import android.content.Context;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bravvura.gourmet.R;
-import com.bravvura.gourmet.models.CategoryBean;
 import com.bravvura.gourmet.models.ProductBean;
 import com.bravvura.gourmet.utils.ScreenUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -27,9 +27,9 @@ import butterknife.ButterKnife;
 public class ProductViewAdapter extends RecyclerView.Adapter<ProductViewAdapter.ViewHolder> {
 
     private Context context;
-    private ArrayList<ProductBean> productBeans;
+    private List<ProductBean> productBeans;
 
-    public ProductViewAdapter(Context context, ArrayList<ProductBean> productBeans) {
+    public ProductViewAdapter(Context context, List<ProductBean> productBeans) {
         this.context = context;
         this.productBeans = productBeans;
     }
@@ -43,8 +43,8 @@ public class ProductViewAdapter extends RecyclerView.Adapter<ProductViewAdapter.
 
     @Override
     public void onBindViewHolder(ProductViewAdapter.ViewHolder holder, int position) {
-        holder.linearLayoutContainer.setLayoutParams(new LinearLayout.LayoutParams(ScreenUtils.getScreenWidth(context) / 2, LinearLayout.LayoutParams.MATCH_PARENT));
-        //holder.ivProductImage.setLayoutParams(new LinearLayout.LayoutParams(ScreenUtils.getScreenWidth(context)/2, LinearLayout.LayoutParams.MATCH_PARENT));
+        holder.cardView.setLayoutParams(new RecyclerView.LayoutParams(ScreenUtils.getScreenWidth(context) / 2, LinearLayout.LayoutParams.WRAP_CONTENT));
+        //holder.ivProductImage.setLayoutParams(new LinearLayout.LayoutParams(ScreenUtils.getScreenWidth(context) / 2, ScreenUtils.getScreenWidth(context) / 2));
 
         ProductBean productBean = productBeans.get(position);
 
@@ -63,6 +63,9 @@ public class ProductViewAdapter extends RecyclerView.Adapter<ProductViewAdapter.
     This class holds all the view objects for list
      */
     public class ViewHolder extends RecyclerView.ViewHolder {
+
+        @Bind(R.id.product_view_row_card_view)
+        CardView cardView;
 
         @Bind(R.id.product_view_row_tv_product_title)
         TextView tvTitle;

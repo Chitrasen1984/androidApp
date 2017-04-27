@@ -5,9 +5,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bravvura.gourmet.R;
+import com.bravvura.gourmet.listeners.OnProductUpdateListener;
 import com.bravvura.gourmet.models.CategoryBean;
 
 import java.util.ArrayList;
@@ -23,10 +25,14 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
 
     private Context context;
     private ArrayList<CategoryBean> categoryBeanList;
+    private OnProductUpdateListener onProductUpdateListener;
+    private int SELECTED_CATEGORY_POSITION;
 
-    public CategoryListAdapter(Context context, ArrayList<CategoryBean> categoryBeenList) {
+    public CategoryListAdapter(Context context, ArrayList<CategoryBean> categoryBeenList, OnProductUpdateListener onProductUpdateListener, int selectedCategoryPosition) {
         this.context = context;
         categoryBeanList = categoryBeenList;
+        this.onProductUpdateListener = onProductUpdateListener;
+        SELECTED_CATEGORY_POSITION = selectedCategoryPosition;
     }
 
     @Override
@@ -37,11 +43,24 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         CategoryBean categoryBean = categoryBeanList.get(position);
 
         holder.tvTitle.setText(categoryBean.title);
+        if (position == SELECTED_CATEGORY_POSITION) {
+            holder.tvTitle.setTextColor(context.getResources().getColor(R.color.green));
+        } else {
+            holder.tvTitle.setTextColor(context.getResources().getColor(R.color.black));
+        }
 
+        holder.llContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SELECTED_CATEGORY_POSITION = position;
+                notifyDataSetChanged();
+                onProductUpdateListener.updateProducts();
+            }
+        });
     }
 
     @Override
@@ -53,6 +72,9 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
     This class holds all the view objects for list
      */
     public class ViewHolder extends RecyclerView.ViewHolder {
+
+        @Bind(R.id.category_row_ll_container)
+        LinearLayout llContainer;
 
         @Bind(R.id.category_row_tv_title)
         TextView tvTitle;

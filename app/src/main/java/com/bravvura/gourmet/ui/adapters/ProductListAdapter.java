@@ -46,7 +46,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         ProductCategory productCategory = productCategories.get(position);
 
         viewHolder.tvTitle.setText(productCategory.header);
-        onProductUpdateListener.updateProducts(viewHolder.rvProducts, productCategory.productBean);
+        //onProductUpdateListener.updateProducts(viewHolder.rvProducts, productCategory.productBean);
     }
 
     @Override
@@ -62,8 +62,8 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         @Bind(R.id.product_list_row_tv_heading)
         TextView tvTitle;
 
-        @Bind(R.id.product_list_row_rv_product)
-        RecyclerView rvProducts;
+        /*@Bind(R.id.product_list_row_rv_product)
+        RecyclerView rvProducts;*/
 
         public ViewHolder(View v) {
             super(v);

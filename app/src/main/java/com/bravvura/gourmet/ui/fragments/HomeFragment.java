@@ -10,7 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bravvura.gourmet.R;
+import com.bravvura.gourmet.listeners.OnToolbarViewChangeListener;
 import com.bravvura.gourmet.ui.adapters.HomeBannerAdapter;
+import com.bravvura.gourmet.utils.Constants;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -27,6 +29,9 @@ public class HomeFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+       /* if (getActivity() != null && getActivity() instanceof OnToolbarViewChangeListener) {
+            ((OnToolbarViewChangeListener) getActivity()).onChangeToolbarView(Constants.TAG_HOME_SCREEN);
+        }*/
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         ButterKnife.bind(this, view);
         return view;
