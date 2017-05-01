@@ -1,8 +1,11 @@
 package com.bravvura.gourmet.ui.activities;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.res.ResourcesCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,13 +15,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.bravvura.gourmet.BuildConfig;
 import com.bravvura.gourmet.R;
-import com.bravvura.gourmet.listeners.OnToolbarViewChangeListener;
 import com.bravvura.gourmet.models.CategoryBean;
 import com.bravvura.gourmet.ui.adapters.CategoryExpandableListAdapter;
-import com.bravvura.gourmet.ui.fragments.BaseBottomTabFragment;
+import com.bravvura.gourmet.ui.fragments.HomeFragment;
 import com.bravvura.gourmet.utils.Constants;
 
 import java.util.ArrayList;
@@ -27,7 +31,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class HomeActivity extends BaseActivity implements OnToolbarViewChangeListener {
+public class HomeActivity extends BaseActivity implements View.OnClickListener {
 
     @Bind(R.id.drawer_layout)
     DrawerLayout drawerLayout;
@@ -38,10 +42,15 @@ public class HomeActivity extends BaseActivity implements OnToolbarViewChangeLis
     @Bind(R.id.toolbar)
     Toolbar toolbar;
 
+    /*@Bind(R.id.toolbar_item_container)
+    LinearLayout toolbarLinearLayout;*/
+
     @Bind(R.id.navigation_view_expandable_list_view)
     ExpandableListView expandableListView;
 
     private ActionBarDrawerToggle toggle;
+
+    private String TAG = BuildConfig.BASE_TAG + "." + "HomeActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,10 +70,9 @@ public class HomeActivity extends BaseActivity implements OnToolbarViewChangeLis
         Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.mipmap.hamburger, getTheme());
         toggle.setHomeAsUpIndicator(drawable);
 
-        /*NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);*/
-
         initDrawerView();
+       /* setupTabLayout();
+        setCustomViewOnTabLayout();*/
 
         toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
             @Override
@@ -87,7 +95,12 @@ public class HomeActivity extends BaseActivity implements OnToolbarViewChangeLis
             @Override
             public boolean onChildClick(ExpandableListView eListView, View view, int groupPosition,
                                         int childPosition, long id) {
-                init(Constants.TAG_CATEGORY_SCREEN);
+                //init(Constants.TAG_CATEGORY_SCREEN);
+
+                Intent intent = new Intent(HomeActivity.this, DrawerAndTabContentActivity.class);
+                intent.putExtra(Constants.EXTRA_SCREEN_TAG, Constants.TAG_CATEGORY_SCREEN);
+                startActivity(intent);
+
                 drawerLayout.closeDrawer(GravityCompat.START);
                 return true /* or true depending on what you need */;
             }
@@ -98,17 +111,44 @@ public class HomeActivity extends BaseActivity implements OnToolbarViewChangeLis
 
     private void initToolbar() {
         toolbar.setLogo(R.mipmap.gourmet_logo);
-        //toolbar.addView(LayoutInflater.from(this).inflate(R.layout.toolbar_view_home_screen, null));
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
     }
 
+    /*private void initiateToolbarView(int screenTag) {
+        toolbarLinearLayout.removeAllViews();
+        View toolbarView = null;
+        if (screenTag == Constants.TAG_HOME_SCREEN) {
+            toolbarView = LayoutInflater.from(this).inflate(R.layout.toolbar_view_home_screen, null);
+           *//* RelativeLayout outerLayout = (RelativeLayout) toolbarView.findViewById(R.id.toolbar_view_home_screen_rl);
+            outerLayout.setLayoutParams(new FrameLayout.LayoutParams(toolbar.getWidth(), toolbar.getHeight()));*//*
+            ImageView ivHamburger = (ImageView) toolbarView.findViewById(R.id.toolbar_view_home_screen_iv_hamburger);
+            ivHamburger.setOnClickListener(this);
+        } *//*else if (screenTag == Constants.TAG_CATEGORY_SCREEN) {
+            toolbarView = LayoutInflater.from(this).inflate(R.layout.toolbar_view_category_screen, null);
+            ImageView ivBack = (ImageView) toolbarView.findViewById(R.id.toolbar_view_category_screen_iv_back);
+            ivBack.setOnClickListener(this);
+        }*//*
+        toolbarLinearLayout.addView(toolbarView);
+    }*/
+
     private void init(int screenTag) {
-        Fragment baseTabfragment = new BaseBottomTabFragment();
+        /*Fragment baseTabfragment = new BaseBottomTabFragment();
         Bundle bundle = new Bundle();
         bundle.putInt(Constants.EXTRA_LOAD_SCREEN, screenTag);
         baseTabfragment.setArguments(bundle);
-        getSupportFragmentManager().beginTransaction().add(R.id.app_bar_home_fl_container, baseTabfragment).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.app_bar_home_fl_container, baseTabfragment).commit();*/
+
+        //initiateToolbarView(screenTag);
+        if (screenTag == Constants.TAG_HOME_SCREEN) {
+            Fragment fragmentHome = new HomeFragment();
+            replaceFragment(fragmentHome);
+        }
+        /*else if (screenTag == Constants.TAG_CATEGORY_SCREEN) {
+            Fragment fragmentCategory = new CategoryFragment();
+            replaceFragment(fragmentCategory);
+        }*/
     }
 
     @Override
@@ -118,42 +158,27 @@ public class HomeActivity extends BaseActivity implements OnToolbarViewChangeLis
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
-            /*Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.app_bar_home_fl_container);
-            if (fragment instanceof BaseBottomTabFragment) {
-                if (((BaseBottomTabFragment) fragment).isHomeOnTop()) {
-                    super.onBackPressed();
-                    return;
-                } else {
-                    ((BaseBottomTabFragment) fragment).onBack();
+            /*Tracer.info(TAG, "Back Stack entry count " + getSupportFragmentManager().getBackStackEntryCount());
+            if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
+                //getSupportFragmentManager().popBackStack();
+                super.onBackPressed();
+                Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.app_bar_home_fl_container);
+                if (fragment instanceof HomeFragment) {
+                    initiateToolbarView(Constants.TAG_HOME_SCREEN);
                 }
+            } else {
+                finish();
             }*/
         }
     }
 
-   /* @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }*/
+    public void replaceFragment(Fragment fragment) {
+        FragmentManager supportFragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = supportFragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.app_bar_home_fl_container, fragment);
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        fragmentTransaction.addToBackStack(null).commit();
+    }
 
     private ArrayList<CategoryBean> prepareListData() {
 
@@ -199,29 +224,14 @@ public class HomeActivity extends BaseActivity implements OnToolbarViewChangeLis
     }
 
     @Override
-    public void onChangeToolbarView(int screenTag) {
-
-
-        if (screenTag == Constants.TAG_CATEGORY_SCREEN) {
-            toggle.setDrawerIndicatorEnabled(false);
-            toolbar.removeAllViews();
-            toolbar.setNavigationIcon(null);
-            toolbar.setContentInsetsAbsolute(0, 0);
-
-            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-
-            View toolbarView = LayoutInflater.from(this).inflate(R.layout.toolbar_view_category_screen, null);
-            LinearLayout llOuter = (LinearLayout) toolbarView.findViewById(R.id.toolbar_view_category_screen_ll);
-            llOuter.setLayoutParams(new LinearLayout.LayoutParams(toolbar.getWidth(), toolbar.getHeight()));
-
-            toolbar.addView(toolbarView);
-        } else if (screenTag == Constants.TAG_HOME_SCREEN) {
-            toolbar.removeAllViews();
-            toggle.setDrawerIndicatorEnabled(true);
-            Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.mipmap.hamburger, getTheme());
-            toolbar.setNavigationIcon(drawable);
-            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
-            toolbar.setLogo(R.mipmap.gourmet_logo);
+    public void onClick(View v) {
+        if (v.getId() == R.id.toolbar_view_home_screen_iv_hamburger) {
+            if (drawerLayout.isDrawerVisible(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START);
+            } else {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
         }
     }
+
 }

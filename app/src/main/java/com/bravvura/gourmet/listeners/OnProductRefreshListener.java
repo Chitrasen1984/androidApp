@@ -11,7 +11,9 @@ import java.util.List;
  * Created by munchado on 26/4/17.
  */
 
-public interface OnProductUpdateListener {
+public interface OnProductRefreshListener {
 
-    public void updateProducts();
+    public void onRefreshProducts();
+
+    public void onClickProduct();
 }

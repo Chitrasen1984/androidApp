@@ -8,8 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.bravvura.gourmet.R;
-import com.bravvura.gourmet.listeners.OnProductUpdateListener;
-import com.bravvura.gourmet.models.CategoryBean;
+import com.bravvura.gourmet.listeners.OnProductRefreshListener;
 import com.bravvura.gourmet.models.ProductCategory;
 
 import java.util.ArrayList;
@@ -25,9 +24,9 @@ public class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private Context context;
     private ArrayList<ProductCategory> productCategories;
-    private OnProductUpdateListener onProductUpdateListener;
+    private OnProductRefreshListener onProductUpdateListener;
 
-    public ProductListAdapter(Context context, ArrayList<ProductCategory> productCategories, OnProductUpdateListener onProductUpdateListener) {
+    public ProductListAdapter(Context context, ArrayList<ProductCategory> productCategories, OnProductRefreshListener onProductUpdateListener) {
         this.context = context;
         this.productCategories = productCategories;
         this.onProductUpdateListener = onProductUpdateListener;

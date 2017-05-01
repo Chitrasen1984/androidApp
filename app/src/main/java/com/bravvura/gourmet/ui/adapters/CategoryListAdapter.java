@@ -9,7 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bravvura.gourmet.R;
-import com.bravvura.gourmet.listeners.OnProductUpdateListener;
+import com.bravvura.gourmet.listeners.OnProductRefreshListener;
 import com.bravvura.gourmet.models.CategoryBean;
 
 import java.util.ArrayList;
@@ -25,13 +25,13 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
 
     private Context context;
     private ArrayList<CategoryBean> categoryBeanList;
-    private OnProductUpdateListener onProductUpdateListener;
+    private OnProductRefreshListener onProductRefreshListener;
     private int SELECTED_CATEGORY_POSITION;
 
-    public CategoryListAdapter(Context context, ArrayList<CategoryBean> categoryBeenList, OnProductUpdateListener onProductUpdateListener, int selectedCategoryPosition) {
+    public CategoryListAdapter(Context context, ArrayList<CategoryBean> categoryBeenList, OnProductRefreshListener onProductRefreshListener, int selectedCategoryPosition) {
         this.context = context;
         categoryBeanList = categoryBeenList;
-        this.onProductUpdateListener = onProductUpdateListener;
+        this.onProductRefreshListener = onProductRefreshListener;
         SELECTED_CATEGORY_POSITION = selectedCategoryPosition;
     }
 
@@ -58,7 +58,7 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
             public void onClick(View v) {
                 SELECTED_CATEGORY_POSITION = position;
                 notifyDataSetChanged();
-                onProductUpdateListener.updateProducts();
+                onProductRefreshListener.onRefreshProducts();
             }
         });
     }

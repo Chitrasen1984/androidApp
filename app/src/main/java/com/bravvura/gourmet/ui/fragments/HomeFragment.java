@@ -10,9 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bravvura.gourmet.R;
-import com.bravvura.gourmet.listeners.OnToolbarViewChangeListener;
 import com.bravvura.gourmet.ui.adapters.HomeBannerAdapter;
-import com.bravvura.gourmet.utils.Constants;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

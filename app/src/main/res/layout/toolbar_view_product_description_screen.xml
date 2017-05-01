@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/toolbar_view_home_screen_rl"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    android:background="@color/colorPrimary"
-    android:orientation="horizontal">
+    android:id="@+id/toolbar_view_product_des_screen_rl_container"
+    android:background="@color/colorPrimary">
 
     <ImageView
-        android:id="@+id/toolbar_view_home_screen_iv_hamburger"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:id="@+id/toolbar_view_product_des_screen_iv_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="10dp"
-        android:src="@mipmap/hamburger" />
+        android:gravity="left|center_vertical"
+        android:src="@mipmap/back" />
 
-
-    <ImageView
-        android:layout_width="60dp"
-        android:layout_height="50dp"
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:src="@mipmap/gourmet_logo" />
+        android:text="Chilled Aussie Beef Shabu Sirloin"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold" />
 
     <RelativeLayout
         android:layout_width="wrap_content"

@@ -1,15 +1,15 @@
 package com.bravvura.gourmet.models;
 
 import android.content.Context;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bravvura.gourmet.R;
+import com.bravvura.gourmet.listeners.OnProductRefreshListener;
 import com.bravvura.gourmet.utils.ScreenUtils;
 
 import java.util.ArrayList;
@@ -26,13 +26,15 @@ public class ProductCategory extends StatelessSection {
     public String header;
     public List<ProductBean> productBean = new ArrayList<>();
     public Context context;
+    public Fragment fragment;
 
-    public ProductCategory(String title, List<ProductBean> list, Context context) {
+    public ProductCategory(String title, List<ProductBean> list, Context context, Fragment fragment) {
         super(R.layout.product_list_row, R.layout.product_view_row);
 
-        this.context= context;
+        this.context = context;
         this.header = title;
         this.productBean = list;
+        this.fragment = fragment;
     }
 
     @Override
@@ -57,17 +59,20 @@ public class ProductCategory extends StatelessSection {
         String quantity = productBean.get(position).quantity;
 
         itemHolder.tvItem.setText(name);
-        itemHolder.tvPrice.setText(price+"");
+        itemHolder.tvPrice.setText(price + "");
         itemHolder.tvQuantity.setText(quantity);
 
-        /*itemHolder.rootView.setOnClickListener(new View.OnClickListener() {
+        itemHolder.rootView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), String.format("Clicked on position #%s of Section %s",
+                if (fragment instanceof OnProductRefreshListener) {
+                    ((OnProductRefreshListener) fragment).onClickProduct();
+                }
+              /*  Toast.makeText(getContext(), String.format("Clicked on position #%s of Section %s",
                         sectionAdapter.getPositionInSection(itemHolder.getAdapterPosition()), title),
-                        Toast.LENGTH_SHORT).show();
+                        Toast.LENGTH_SHORT).show();*/
             }
-        });*/
+        });
     }
 
     @Override
@@ -116,7 +121,7 @@ public class ProductCategory extends StatelessSection {
             super(view);
 
             rootView = view;
-            cardView= (CardView) view.findViewById(R.id.product_view_row_card_view);
+            cardView = (CardView) view.findViewById(R.id.product_view_row_card_view);
             tvItem = (TextView) view.findViewById(R.id.product_view_row_tv_product_title);
             tvQuantity = (TextView) view.findViewById(R.id.product_view_row_tv_product_quantity);
             tvPrice = (TextView) view.findViewById(R.id.product_view_row_tv_product_price);

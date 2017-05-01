@@ -27,6 +27,19 @@
             android:screenOrientation="portrait">
 
         </activity>
+
+        <activity
+            android:name="com.bravvura.gourmet.ui.activities.ProductDescriptionActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
+
+        </activity>
+
+        <activity
+            android:name=".ui.activities.DrawerAndTabContentActivity"
+            android:label="Gourmet"
+            android:screenOrientation="portrait"></activity>
+
     </application>
 
 </manifest>

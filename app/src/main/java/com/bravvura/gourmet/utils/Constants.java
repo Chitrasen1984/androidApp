@@ -6,7 +6,7 @@ package com.bravvura.gourmet.utils;
 
 public class Constants {
 
-    public static String EXTRA_LOAD_SCREEN= "EXTRA_LOAD_SCREEN";
+    public static String EXTRA_SCREEN_TAG= "EXTRA_SCREEN_TAG";
     public static int TAG_HOME_SCREEN = 1;
     public static int TAG_CATEGORY_SCREEN = 2;
 

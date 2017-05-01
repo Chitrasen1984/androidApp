@@ -8,4 +8,14 @@
 
     <!--Home Screen-->
     <string name="search_hint">Search Gourmet Egypt</string>
+
+    <!--Common Strings-->
+    <string name="add_to_favorites_btn">Add to Favourites</string>
+    <string name="share_btn">Share</string>
+    <string name="compare_btn">Compare</string>
+
+    <!--Product Description Screen-->
+    <string name="you_might_also_like_txt">You Might Also Like</string>
+    <string name="customers_also_bought_txt">Customers Who Bought This Also Bought</string>
+
 </resources>

@@ -1,5 +1,6 @@
 package com.bravvura.gourmet.ui.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -13,16 +14,12 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.bravvura.gourmet.R;
-import com.bravvura.gourmet.listeners.OnProductUpdateListener;
-import com.bravvura.gourmet.listeners.OnToolbarViewChangeListener;
+import com.bravvura.gourmet.listeners.OnProductRefreshListener;
 import com.bravvura.gourmet.models.CategoryBean;
 import com.bravvura.gourmet.models.ProductBean;
 import com.bravvura.gourmet.models.ProductCategory;
+import com.bravvura.gourmet.ui.activities.ProductDescriptionActivity;
 import com.bravvura.gourmet.ui.adapters.CategoryListAdapter;
-import com.bravvura.gourmet.ui.adapters.HomeBannerAdapter;
-import com.bravvura.gourmet.ui.adapters.ProductListAdapter;
-import com.bravvura.gourmet.ui.adapters.ProductViewAdapter;
-import com.bravvura.gourmet.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +32,7 @@ import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapt
  * Created by munchado on 26/4/17.
  */
 
-public class CategoryFragment extends Fragment implements OnProductUpdateListener {
+public class CategoryFragment extends Fragment implements OnProductRefreshListener {
 
     @Bind(R.id.fragment_category_rv_categories)
     RecyclerView recyclerViewCategory;
@@ -48,14 +45,14 @@ public class CategoryFragment extends Fragment implements OnProductUpdateListene
 
     private SectionedRecyclerViewAdapter sectionAdapter;
 
-    private int selectedCategoryPosition=0;
+    private int selectedCategoryPosition = 0;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if (getActivity() != null && getActivity() instanceof OnToolbarViewChangeListener) {
+        /*if (getActivity() != null && getActivity() instanceof OnToolbarViewChangeListener) {
             ((OnToolbarViewChangeListener) getActivity()).onChangeToolbarView(Constants.TAG_CATEGORY_SCREEN);
-        }
+        }*/
         View view = inflater.inflate(R.layout.fragment_category, container, false);
         ButterKnife.bind(this, view);
         return view;
@@ -133,30 +130,30 @@ public class CategoryFragment extends Fragment implements OnProductUpdateListene
                     productBean.productPrice = 67.50;
                     productBean.quantity = "700g";
                 }
-                productBean.currency = "EPG";
+                productBean.currency = "EGP";
                 productBeanList.add(productBean);
             }
             ProductCategory productCategory = null;
             if (i == 0)
-                productCategory = new ProductCategory("Most Popular", productBeanList, getActivity());
+                productCategory = new ProductCategory("Most Popular", productBeanList, getActivity(), CategoryFragment.this);
             else if (i == 1)
-                productCategory = new ProductCategory("All Time Favorites", productBeanList, getActivity());
+                productCategory = new ProductCategory("All Time Favorites", productBeanList, getActivity(), CategoryFragment.this);
             else if (i == 2)
-                productCategory = new ProductCategory("Weekly Supplies", productBeanList, getActivity());
+                productCategory = new ProductCategory("Weekly Supplies", productBeanList, getActivity(), CategoryFragment.this);
             else if (i == 3)
-                productCategory = new ProductCategory("Most popular-1", productBeanList, getActivity());
+                productCategory = new ProductCategory("Most popular-1", productBeanList, getActivity(), CategoryFragment.this);
             else if (i == 4)
-                productCategory = new ProductCategory("All Time Favorites-1", productBeanList, getActivity());
+                productCategory = new ProductCategory("All Time Favorites-1", productBeanList, getActivity(), CategoryFragment.this);
             else if (i == 5)
-                productCategory = new ProductCategory("Weekly Supplies-1", productBeanList, getActivity());
+                productCategory = new ProductCategory("Weekly Supplies-1", productBeanList, getActivity(), CategoryFragment.this);
             else if (i == 6)
-                productCategory = new ProductCategory("Most Popular-2", productBeanList, getActivity());
+                productCategory = new ProductCategory("Most Popular-2", productBeanList, getActivity(), CategoryFragment.this);
             else if (i == 7)
-                productCategory = new ProductCategory("All Time Favorites-2", productBeanList, getActivity());
+                productCategory = new ProductCategory("All Time Favorites-2", productBeanList, getActivity(), CategoryFragment.this);
             else if (i == 8)
-                productCategory = new ProductCategory("Weekly Supplies-2", productBeanList, getActivity());
+                productCategory = new ProductCategory("Weekly Supplies-2", productBeanList, getActivity(), CategoryFragment.this);
             else if (i == 9)
-                productCategory = new ProductCategory("Weekly Supplies-3", productBeanList, getActivity());
+                productCategory = new ProductCategory("Weekly Supplies-3", productBeanList, getActivity(), CategoryFragment.this);
             sectionAdapter.addSection(productCategory);
         }
     }
@@ -239,11 +236,17 @@ public class CategoryFragment extends Fragment implements OnProductUpdateListene
     }*/
 
     @Override
-    public void updateProducts() {
+    public void onRefreshProducts() {
        /* GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
         rViewProduct.setLayoutManager(gridLayoutManager);
         rViewProduct.setAdapter(new ProductViewAdapter(getActivity(), productBeans));*/
 
         initProductContainer();
+    }
+
+    @Override
+    public void onClickProduct() {
+        Intent intent = new Intent(getActivity(), ProductDescriptionActivity.class);
+        startActivity(intent);
     }
 }
